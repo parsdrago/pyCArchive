@@ -1,7 +1,8 @@
+import locale
 from io import BytesIO
 
 from pytest import approx
-import locale
+
 from pycarchive import __version__
 from pycarchive.core import CArchive, CArchiveMode, Type
 

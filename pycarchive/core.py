@@ -85,32 +85,39 @@ class CArchive:
 
         raise Exception("Unknown type")
 
-    
     def __read_string_header(self):
         count = self.file.read(1)
         if count != b"\xff":
-            return int.from_bytes(count, byteorder="little"), locale.getpreferredencoding()
+            return (
+                int.from_bytes(count, byteorder="little"),
+                locale.getpreferredencoding(),
+            )
 
         count = self.file.read(2)
 
         if count != b"\xfe\xff":
             if count != b"\xff\xff":
-                return int.from_bytes(count, byteorder="little"), locale.getpreferredencoding()
+                return (
+                    int.from_bytes(count, byteorder="little"),
+                    locale.getpreferredencoding(),
+                )
 
             count = self.file.read(4)
-            return int.from_bytes(count, byteorder="little"), locale.getpreferredencoding()
+            return (
+                int.from_bytes(count, byteorder="little"),
+                locale.getpreferredencoding(),
+            )
 
         count = self.file.read(1)
         if count != b"\xff":
-            return int.from_bytes(count, byteorder="little")*2, "utf-16-le"
+            return int.from_bytes(count, byteorder="little") * 2, "utf-16-le"
 
         count = self.file.read(2)
         if count != b"\xff\xff":
-            return int.from_bytes(count, byteorder="little")*2, "utf-16-le"
+            return int.from_bytes(count, byteorder="little") * 2, "utf-16-le"
 
         count = self.file.read(4)
-        return int.from_bytes(count, byteorder="little")*2, "utf-16-le"
-
+        return int.from_bytes(count, byteorder="little") * 2, "utf-16-le"
 
     def write(self, type: Type, value, encoding: str = "utf-16-le"):
         """
