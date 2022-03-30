@@ -48,7 +48,7 @@ class CArchive:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.file.close()
 
-    def read(self, type: Type) -> bytes:
+    def read(self, type: Type):
         """
         read
         """
