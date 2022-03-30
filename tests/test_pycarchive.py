@@ -110,3 +110,50 @@ def test_read_uint16_and_uint32():
     ar = CArchive(dummy, CArchiveMode.read)
     assert ar.read(Type.uint16) == 1
     assert ar.read(Type.uint32) == 2
+
+
+def test_read_int16():
+    dummy = BytesIO(b"\xff\xff")
+
+    ar = CArchive(dummy, CArchiveMode.read)
+    assert ar.read(Type.int16) == -1
+
+
+def test_write_int16():
+    dummy = BytesIO()
+
+    ar = CArchive(dummy, CArchiveMode.write)
+    ar.write(Type.int16, -1)
+    assert dummy.getvalue() == b"\xff\xff"
+
+
+def test_read_int32():
+    dummy = BytesIO(b"\xff\xff\xff\xff")
+
+    ar = CArchive(dummy, CArchiveMode.read)
+    assert ar.read(Type.int32) == -1
+
+
+def test_write_int32():
+    dummy = BytesIO()
+
+    ar = CArchive(dummy, CArchiveMode.write)
+    ar.write(Type.int32, -1)
+    assert dummy.getvalue() == b"\xff\xff\xff\xff"
+
+
+def test_read_int64():
+    dummy = BytesIO(b"\xff\xff\xff\xff\xff\xff\xff\xff")
+
+    ar = CArchive(dummy, CArchiveMode.read)
+    assert ar.read(Type.int64) == -1
+
+
+def test_write_int64():
+    dummy = BytesIO()
+
+    ar = CArchive(dummy, CArchiveMode.write)
+    ar.write(Type.int64, -1)
+    assert dummy.getvalue() == b"\xff\xff\xff\xff\xff\xff\xff\xff"
+
+
