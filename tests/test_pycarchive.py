@@ -262,3 +262,18 @@ def test_write_utf16lestring():
     ar = CArchive(dummy, CArchiveMode.write)
     ar.write(Type.string, "hello", encoding="utf-16-le")
     assert dummy.getvalue() == b"\xff\xfe\xff\x05h\x00e\x00l\x00l\x00o\x00"
+
+
+def test_read_asciistring_with_null():
+    dummy = BytesIO(b"\x05hello\x00")
+
+    ar = CArchive(dummy, CArchiveMode.read)
+    assert ar.read(Type.string) == "hello"
+
+
+def test_read_string_and_int16():
+    dummy = BytesIO(b"\x05hello\xff\xff")
+
+    ar = CArchive(dummy, CArchiveMode.read)
+    assert ar.read(Type.string) == "hello"
+    assert ar.read(Type.int16) == -1
