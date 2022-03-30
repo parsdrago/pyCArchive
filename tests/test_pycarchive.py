@@ -1,7 +1,7 @@
 import locale
 from io import BytesIO
 
-from pytest import approx
+from pytest import approx, raises
 
 from pycarchive import __version__
 from pycarchive.core import CArchive, CArchiveMode, Type
@@ -208,6 +208,21 @@ def test_read_asciistring():
     assert ar.read(Type.string) == "hello"
 
 
+def test_read_long_asciistring():
+    dummy = BytesIO(b"\xff\xe8\03" + b"a" * 1000)
+
+    ar = CArchive(dummy, CArchiveMode.read)
+    assert ar.read(Type.string) == "a" * 1000
+
+
+def test_write_asciistring():
+    dummy = BytesIO()
+
+    ar = CArchive(dummy, CArchiveMode.write)
+    ar.write(Type.string, "a" * 1000)
+    assert dummy.getvalue() == b"\xff\xe8\03" + b"a" * 1000
+
+
 def test_read_cp932string():
     locale.getpreferredencoding = lambda: "cp932"
     dummy = BytesIO(b"\x04\x82\xb1\x82\xf1")
@@ -278,3 +293,27 @@ def test_read_string_and_int16():
     ar = CArchive(dummy, CArchiveMode.read)
     assert ar.read(Type.string) == "hello"
     assert ar.read(Type.int16) == -1
+
+
+def test_read_using_with():
+    dummy = BytesIO(b"\x05hello\xff\xff")
+
+    with CArchive(dummy, CArchiveMode.read) as ar:
+        assert ar.read(Type.string) == "hello"
+        assert ar.read(Type.int16) == -1
+
+
+def test_write_file_opend_with_read_mode():
+    dummy = BytesIO(b"\x05hello\xff\xff")
+
+    with CArchive(dummy, CArchiveMode.read) as ar:
+        with raises(Exception):
+            ar.write(Type.string, "hello")
+
+
+def test_read_file_opend_with_write_mode():
+    dummy = BytesIO()
+
+    with CArchive(dummy, CArchiveMode.write) as ar:
+        with raises(Exception):
+            ar.read(Type.string)
