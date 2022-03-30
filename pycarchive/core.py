@@ -25,6 +25,8 @@ class Type(Enum):
 
     unknown = 0
     uint16 = 1
+    uint32 = 2
+    uint64 = 3
 
 
 class CArchive:
@@ -48,6 +50,12 @@ class CArchive:
         if type == Type.uint16:
             return int.from_bytes(self.file.read(2), byteorder="little", signed=False)
 
+        if type == Type.uint32:
+            return int.from_bytes(self.file.read(4), byteorder="little", signed=False)
+
+        if type == Type.uint64:
+            return int.from_bytes(self.file.read(8), byteorder="little", signed=False)
+
         raise Exception("Unknown type")
 
     def write(self, type: Type, value):
@@ -59,5 +67,11 @@ class CArchive:
 
         if type == Type.uint16:
             return self.file.write(value.to_bytes(2, byteorder="little", signed=False))
+
+        if type == Type.uint32:
+            return self.file.write(value.to_bytes(4, byteorder="little", signed=False))
+
+        if type == Type.uint64:
+            return self.file.write(value.to_bytes(8, byteorder="little", signed=False))
 
         raise Exception("Unknown type")
