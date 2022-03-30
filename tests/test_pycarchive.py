@@ -1,7 +1,7 @@
 from io import BytesIO
 
 from pytest import approx
-
+import locale
 from pycarchive import __version__
 from pycarchive.core import CArchive, CArchiveMode, Type
 
@@ -199,3 +199,66 @@ def test_read_int16_and_double():
     assert ar.read(Type.int16) == -1
     assert approx(ar.read(Type.double)) == 0.1
 
+
+def test_read_asciistring():
+    dummy = BytesIO(b"\x05hello")
+
+    ar = CArchive(dummy, CArchiveMode.read)
+    assert ar.read(Type.string) == "hello"
+
+
+def test_read_cp932string():
+    locale.getpreferredencoding = lambda: "cp932"
+    dummy = BytesIO(b"\x04\x82\xb1\x82\xf1")
+
+    ar = CArchive(dummy, CArchiveMode.read)
+    assert ar.read(Type.string) == "こん"
+
+
+def test_read_cp936string():
+    locale.getpreferredencoding = lambda: "cp936"
+    dummy = BytesIO(b"\x02\x81\x5c")
+
+    ar = CArchive(dummy, CArchiveMode.read)
+    assert ar.read(Type.string) == "乗"
+
+
+def test_read_utf16lestring():
+    dummy = BytesIO(b"\xff\xfe\xff\x05\x68\x00\x65\x00\x6c\x00\x6c\x00\x6f\x00")
+
+    ar = CArchive(dummy, CArchiveMode.read)
+    assert ar.read(Type.string) == "hello"
+
+
+def test_write_asciistring():
+    dummy = BytesIO()
+
+    ar = CArchive(dummy, CArchiveMode.write)
+    ar.write(Type.string, "hello", encoding="ascii")
+    assert dummy.getvalue() == b"\x05hello"
+
+
+def test_write_cp932string():
+    locale.getpreferredencoding = lambda: "cp932"
+    dummy = BytesIO()
+
+    ar = CArchive(dummy, CArchiveMode.write)
+    ar.write(Type.string, "こん", encoding="cp932")
+    assert dummy.getvalue() == b"\x04\x82\xb1\x82\xf1"
+
+
+def test_write_cp936string():
+    locale.getpreferredencoding = lambda: "cp936"
+    dummy = BytesIO()
+
+    ar = CArchive(dummy, CArchiveMode.write)
+    ar.write(Type.string, "乗", encoding="cp936")
+    assert dummy.getvalue() == b"\x02\x81\x5c"
+
+
+def test_write_utf16lestring():
+    dummy = BytesIO()
+
+    ar = CArchive(dummy, CArchiveMode.write)
+    ar.write(Type.string, "hello", encoding="utf-16-le")
+    assert dummy.getvalue() == b"\xff\xfe\xff\x05h\x00e\x00l\x00l\x00o\x00"
