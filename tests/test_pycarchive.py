@@ -21,3 +21,20 @@ def test_write_uint16():
     ar = CArchive(dummy, CArchiveMode.write)
     ar.write(Type.uint16, 1)
     assert dummy.getvalue() == b"\x01\x00"
+
+
+def test_read_2_uint16():
+    dummy = BytesIO(b"\x01\x00\x02\x00")
+
+    ar = CArchive(dummy, CArchiveMode.read)
+    assert ar.read(Type.uint16) == 1
+    assert ar.read(Type.uint16) == 2
+
+
+def test_write_2_uint16():
+    dummy = BytesIO()
+
+    ar = CArchive(dummy, CArchiveMode.write)
+    ar.write(Type.uint16, 1)
+    ar.write(Type.uint16, 2)
+    assert dummy.getvalue() == b"\x01\x00\x02\x00"
