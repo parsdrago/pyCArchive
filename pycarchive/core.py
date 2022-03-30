@@ -5,14 +5,15 @@ library to read/write MFC CArchive files
 """
 
 
-from enum import Enum
 import typing
+from enum import Enum
 
 
 class CArchiveMode(Enum):
     """
     CArchiveMode
     """
+
     read = 1
     write = 2
 
@@ -21,6 +22,7 @@ class Type(Enum):
     """
     Type
     """
+
     unknown = 0
     uint16 = 1
 
@@ -41,10 +43,21 @@ class CArchive:
         read
         """
         if self.mode != CArchiveMode.read:
-            raise Exception('CArchive is not in read mode')
-
+            raise Exception("CArchive is not in read mode")
 
         if type == Type.uint16:
-            return int.from_bytes(self.file.read(2), byteorder='little', signed=False)
+            return int.from_bytes(self.file.read(2), byteorder="little", signed=False)
 
-        raise Exception('Unknown type')
+        raise Exception("Unknown type")
+
+    def write(self, type: Type, value):
+        """
+        write
+        """
+        if self.mode != CArchiveMode.write:
+            raise Exception("CArchive is not in write mode")
+
+        if type == Type.uint16:
+            return self.file.write(value.to_bytes(2, byteorder="little", signed=False))
+
+        raise Exception("Unknown type")
