@@ -5,6 +5,7 @@ library to read/write MFC CArchive files
 """
 
 
+import struct
 import typing
 from enum import Enum
 
@@ -30,6 +31,8 @@ class Type(Enum):
     int16 = 4
     int32 = 5
     int64 = 6
+    float = 7
+    double = 8
 
 
 class CArchive:
@@ -68,6 +71,12 @@ class CArchive:
         if type == Type.int64:
             return int.from_bytes(self.file.read(8), byteorder="little", signed=True)
 
+        if type == Type.float:
+            return struct.unpack("f", self.file.read(4))[0]
+
+        if type == Type.double:
+            return struct.unpack("d", self.file.read(8))[0]
+
         raise Exception("Unknown type")
 
     def write(self, type: Type, value):
@@ -94,5 +103,11 @@ class CArchive:
 
         if type == Type.int64:
             return self.file.write(value.to_bytes(8, byteorder="little", signed=True))
+
+        if type == Type.float:
+            return self.file.write(struct.pack("f", value))
+
+        if type == Type.double:
+            return self.file.write(struct.pack("d", value))
 
         raise Exception("Unknown type")
