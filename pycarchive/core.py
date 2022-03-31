@@ -16,8 +16,8 @@ class CArchiveMode(Enum):
     CArchiveMode
     """
 
-    read = 1
-    write = 2
+    READ = 1
+    WRITE = 2
 
 
 class Type(Enum):
@@ -25,19 +25,23 @@ class Type(Enum):
     Type
     """
 
-    unknown = 0
-    uint16 = 1
-    uint32 = 2
-    uint64 = 3
-    int16 = 4
-    int32 = 5
-    int64 = 6
-    float = 7
-    double = 8
-    string = 9
+    UNKNOWN = 0
+    UINT16 = 1
+    UINT32 = 2
+    UINT64 = 3
+    INT16 = 4
+    INT32 = 5
+    INT64 = 6
+    FLOAT = 7
+    DOUBLE = 8
+    STRING = 9
 
 
 class CArchive:
+    """
+    CArchive
+    """
+
     def __init__(self, file: typing.BinaryIO, mode: CArchiveMode):
         self.mode = mode
         self.file = file
@@ -48,38 +52,38 @@ class CArchive:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.file.close()
 
-    def read(self, type: Type):
+    def read(self, variable_type: Type):
         """
         read
         """
-        if self.mode != CArchiveMode.read:
+        if self.mode != CArchiveMode.READ:
             raise Exception("CArchive is not in read mode")
 
-        if type == Type.uint16:
+        if variable_type == Type.UINT16:
             return int.from_bytes(self.file.read(2), byteorder="little", signed=False)
 
-        if type == Type.uint32:
+        if variable_type == Type.UINT32:
             return int.from_bytes(self.file.read(4), byteorder="little", signed=False)
 
-        if type == Type.uint64:
+        if variable_type == Type.UINT64:
             return int.from_bytes(self.file.read(8), byteorder="little", signed=False)
 
-        if type == Type.int16:
+        if variable_type == Type.INT16:
             return int.from_bytes(self.file.read(2), byteorder="little", signed=True)
 
-        if type == Type.int32:
+        if variable_type == Type.INT32:
             return int.from_bytes(self.file.read(4), byteorder="little", signed=True)
 
-        if type == Type.int64:
+        if variable_type == Type.INT64:
             return int.from_bytes(self.file.read(8), byteorder="little", signed=True)
 
-        if type == Type.float:
+        if variable_type == Type.FLOAT:
             return struct.unpack("f", self.file.read(4))[0]
 
-        if type == Type.double:
+        if variable_type == Type.DOUBLE:
             return struct.unpack("d", self.file.read(8))[0]
 
-        if type == Type.string:
+        if variable_type == Type.STRING:
             count, encoding = self.__read_string_header()
             return self.file.read(count).decode(encoding)
 
@@ -119,38 +123,38 @@ class CArchive:
         count = self.file.read(4)
         return int.from_bytes(count, byteorder="little") * 2, "utf-16-le"
 
-    def write(self, type: Type, value, encoding: str = "utf-16-le"):
+    def write(self, variable_type: Type, value, encoding: str = "utf-16-le"):
         """
         write
         """
-        if self.mode != CArchiveMode.write:
+        if self.mode != CArchiveMode.WRITE:
             raise Exception("CArchive is not in write mode")
 
-        if type == Type.uint16:
+        if variable_type == Type.UINT16:
             return self.file.write(value.to_bytes(2, byteorder="little", signed=False))
 
-        if type == Type.uint32:
+        if variable_type == Type.UINT32:
             return self.file.write(value.to_bytes(4, byteorder="little", signed=False))
 
-        if type == Type.uint64:
+        if variable_type == Type.UINT64:
             return self.file.write(value.to_bytes(8, byteorder="little", signed=False))
 
-        if type == Type.int16:
+        if variable_type == Type.INT16:
             return self.file.write(value.to_bytes(2, byteorder="little", signed=True))
 
-        if type == Type.int32:
+        if variable_type == Type.INT32:
             return self.file.write(value.to_bytes(4, byteorder="little", signed=True))
 
-        if type == Type.int64:
+        if variable_type == Type.INT64:
             return self.file.write(value.to_bytes(8, byteorder="little", signed=True))
 
-        if type == Type.float:
+        if variable_type == Type.FLOAT:
             return self.file.write(struct.pack("f", value))
 
-        if type == Type.double:
+        if variable_type == Type.DOUBLE:
             return self.file.write(struct.pack("d", value))
 
-        if type == Type.string:
+        if variable_type == Type.STRING:
             count = len(value)
             text = value.encode(encoding)
             if encoding in ["utf-16-le", "utf-16le"]:
