@@ -4,7 +4,7 @@ python library to read/write [MFC CArchive](https://docs.microsoft.com/en-us/cpp
 ## SAMPLE
 
 ``` python
-from pycarchive import CArchive
+from pycarchive import CArchive, CArchiveMode, Type
 
 with open(path, "wb") as f:
     with CArchive(dummy, CArchiveMode.write) as ar:
