@@ -4,8 +4,7 @@ from io import BytesIO
 from pytest import approx, raises
 
 from pycarchive import __version__
-from pycarchive.core import CArchive, CArchiveMode, Type
-
+from pycarchive.__main__ import CArchive, Type, CArchiveMode
 
 def test_version():
     assert __version__ == "0.1.0"
