@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "pyCArchive"
 version = "0.1.0"
-description = ""
+description = "python library to read/write MFC CArchive serialized file"
 authors = ["utan <iw.utan@gmail.com>"]
 
 [tool.poetry.dependencies]
