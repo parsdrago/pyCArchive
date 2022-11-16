@@ -1,4 +1,6 @@
 # pyCArchive
+[![Python package](https://github.com/parsdrago/pyCArchive/actions/workflows/python-package.yml/badge.svg)](https://github.com/parsdrago/pyCArchive/actions/workflows/python-package.yml)
+
 python library to read/write [MFC CArchive](https://docs.microsoft.com/en-us/cpp/mfc/serialization-in-mfc?view=msvc-170) serialized file
 
 ## SAMPLE
